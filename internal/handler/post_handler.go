@@ -9,16 +9,16 @@ import (
 )
 
 type PostHandler struct {
-	service *service.PostRepository
+	service *service.PostService
 }
 
-func NewPostHandler(service *service.PostRepository) *PostHandler {
+func NewPostHandler(service *service.PostService) *PostHandler {
 	return &PostHandler{
 		service: service,
 	}
 }
 
-func (h *PostHandler) CreatePost(w http.ResponseWriter, r http.Request) {
+func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	var post model.Post
 
 	err := json.NewDecoder(r.Body).Decode(&post)
