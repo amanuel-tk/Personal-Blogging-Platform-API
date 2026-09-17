@@ -1,4 +1,4 @@
-package service
+package repository
 
 import (
 	"context"
@@ -19,7 +19,7 @@ func NewPostRepository(db *sql.DB) *PostRepository {
 
 func (r *PostRepository) CreatePost(ctx context.Context, post model.Post) (*model.Post, error) {
 
-	query := `INSERT INTO post (title,content) VALUE ($1,$2) RETURNING id`
+	query := `INSERT INTO post (title,content) VALUES ($1,$2) RETURNING id`
 
 	err := r.db.QueryRowContext(ctx, query, post.Title, post.Content).Scan(&post.ID)
 

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/amanuel-tk/Personal-Blogging-Platform-API/internal/model"
@@ -9,16 +10,16 @@ import (
 )
 
 type PostHandler struct {
-	service *service.PostRepository
+	service *service.PostService
 }
 
-func NewPostHandler(service *service.PostRepository) *PostHandler {
+func NewPostHandler(service *service.PostService) *PostHandler {
 	return &PostHandler{
 		service: service,
 	}
 }
 
-func (h *PostHandler) CreatePost(w http.ResponseWriter, r http.Request) {
+func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	var post model.Post
 
 	err := json.NewDecoder(r.Body).Decode(&post)
@@ -26,6 +27,8 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r http.Request) {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
+
+	fmt.Println(post)
 
 	createdPost, err := h.service.CreatePost(r.Context(), post)
 

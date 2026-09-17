@@ -1,11 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"net/http"
 
 	"github.com/amanuel-tk/Personal-Blogging-Platform-API/internal/config"
 	"github.com/amanuel-tk/Personal-Blogging-Platform-API/internal/database"
+	"github.com/amanuel-tk/Personal-Blogging-Platform-API/internal/handler"
+	"github.com/amanuel-tk/Personal-Blogging-Platform-API/internal/repository"
 	"github.com/amanuel-tk/Personal-Blogging-Platform-API/internal/service"
 )
 
@@ -23,7 +25,16 @@ func main() {
 	}
 	defer db.Close()
 
-	postRepo := service.NewPostRepository(db)
+	postRepo := repository.NewPostRepository(db)
+	postService := service.NewPostService(postRepo)
+	postHandler := handler.NewPostHandler(postService)
 
-	fmt.Println("Connected to PostgresSQL")
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("POST /post", postHandler.CreatePost)
+
+	err = http.ListenAndServe(":8080", mux)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
