@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/amanuel-tk/Personal-Blogging-Platform-API/internal/model"
@@ -26,6 +27,8 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
+
+	fmt.Println(post)
 
 	createdPost, err := h.service.CreatePost(r.Context(), post)
 

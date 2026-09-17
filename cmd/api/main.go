@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -34,7 +33,8 @@ func main() {
 
 	mux.HandleFunc("POST /post", postHandler.CreatePost)
 
-	http.ListenAndServe("8080", mux)
-
-	fmt.Println("Connected to PostgresSQL")
+	err = http.ListenAndServe(":8080", mux)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
