@@ -6,6 +6,7 @@ import (
 
 	"github.com/amanuel-tk/Personal-Blogging-Platform-API/internal/config"
 	"github.com/amanuel-tk/Personal-Blogging-Platform-API/internal/database"
+	"github.com/amanuel-tk/Personal-Blogging-Platform-API/internal/service"
 )
 
 func main() {
@@ -21,6 +22,8 @@ func main() {
 		log.Fatal(err)
 	}
 	defer db.Close()
+
+	postRepo := service.NewPostRepository(db)
 
 	fmt.Println("Connected to PostgresSQL")
 }
