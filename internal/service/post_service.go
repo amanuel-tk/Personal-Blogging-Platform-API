@@ -65,3 +65,13 @@ func (s *PostService) UpdatePost(ctx context.Context, id string, updatedPost mod
 	return s.repo.UpdatePost(ctx, id, updatedPost)
 
 }
+
+func (s *PostService) DeletePost(ctx context.Context, id string) error {
+	id = strings.TrimSpace(id)
+
+	if id == "" {
+		return errors.New("id is required")
+	}
+
+	return s.repo.DeletePost(ctx, id)
+}
