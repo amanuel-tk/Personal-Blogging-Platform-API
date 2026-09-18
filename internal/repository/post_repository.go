@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
 
 	"github.com/amanuel-tk/Personal-Blogging-Platform-API/internal/model"
 )
@@ -79,5 +80,24 @@ func (r *PostRepository) UpdatePost(ctx context.Context, id string, updatedPost 
 		return nil, err
 	}
 	return &updatedPost, nil
+
+}
+
+func (r *PostRepository) DeletePost(ctx context.Context, id string) error {
+	query := `DELETE FROM posts WHERE id=1$`
+
+	result, err := r.db.ExecContext(ctx, query, id)
+
+	if err != nil {
+		return err
+	}
+	rowAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowAffected == 0 {
+		return errors.New("post not found")
+	}
+	return nil
 
 }
