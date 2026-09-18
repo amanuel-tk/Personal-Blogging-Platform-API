@@ -34,6 +34,7 @@ func main() {
 	mux.HandleFunc("POST /post", postHandler.CreatePost)
 	mux.HandleFunc("GET /posts", postHandler.GetPosts)
 	mux.HandleFunc("PATCH /post/{id}", postHandler.UpdatePost)
+	mux.HandleFunc("DELETE /post/{id}", postHandler.DeletePost)
 
 	err = http.ListenAndServe(":8080", mux)
 	if err != nil {
