@@ -32,7 +32,7 @@ func (r *PostRepository) CreatePost(ctx context.Context, post model.Post) (*mode
 }
 
 func (r *PostRepository) GetPost(ctx context.Context) ([]model.Post, error) {
-	query := `SELECT * FROM posts`
+	query := `SELECT id,title,content,COALESCE(tags,''),created_at,updated_at FROM posts`
 
 	rows, err := r.db.QueryContext(ctx, query)
 
