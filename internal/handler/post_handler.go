@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/amanuel-tk/Personal-Blogging-Platform-API/internal/model"
@@ -33,7 +34,8 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	createdPost, err := h.service.CreatePost(r.Context(), post)
 
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Printf("failed to create post :%v", err)
+		http.Error(w, "failed to create post", http.StatusBadRequest)
 		return
 	}
 
@@ -47,7 +49,8 @@ func (h PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 	getPosts, err := h.service.GetPost(r.Context())
 
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Printf("failed to fetch posts: %v", err)
+		http.Error(w, "failed to get posts", http.StatusBadRequest)
 		return
 	}
 
