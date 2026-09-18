@@ -50,6 +50,10 @@ func (s *PostService) UpdatePost(ctx context.Context, id string, updatedPost mod
 	updatedPost.Title = strings.TrimSpace(updatedPost.Title)
 	updatedPost.Tags = strings.TrimSpace(updatedPost.Tags)
 
+	if err := s.validator.Struct(updatedPost); err != nil {
+		return nil, err
+	}
+
 	if id == "" {
 		return nil, errors.New("id is required")
 	}
