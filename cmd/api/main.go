@@ -32,6 +32,7 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("POST /post", postHandler.CreatePost)
+	mux.HandleFunc("GET /posts", postHandler.GetPosts)
 
 	err = http.ListenAndServe(":8080", mux)
 	if err != nil {
