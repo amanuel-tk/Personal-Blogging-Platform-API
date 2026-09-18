@@ -103,7 +103,7 @@ func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	w.WriteHeader(http.StatusNoContent)
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{
 		"message": " post deleted successfully",
 	})
