@@ -90,6 +90,7 @@ func (h *PostHandler) UpdatePost(w http.ResponseWriter, r *http.Request) {
 		log.Printf("failed to update post:%v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{"error": "failed to update post"})
+		return
 	}
 
 	w.Header().Set("content-type", "application/json")

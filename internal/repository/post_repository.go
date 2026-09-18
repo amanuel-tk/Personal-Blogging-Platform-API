@@ -71,9 +71,9 @@ func (r *PostRepository) GetPost(ctx context.Context) ([]model.Post, error) {
 
 func (r *PostRepository) UpdatePost(ctx context.Context, id string, updatedPost model.Post) (*model.Post, error) {
 
-	query := `UPDATE posts SET title=$1,content=$2,updated_at=CURRENT_TIMESTAMP WHERE id=$3 RETURNING title,content,COALESCE(tag,''),created_at,updated_at`
+	query := `UPDATE posts SET title=$1,content=$2,tags=$3,updated_at=CURRENT_TIMESTAMP WHERE id=$4 RETURNING title,content,COALESCE(tags,''),created_at,updated_at`
 
-	err := r.db.QueryRowContext(ctx, query, updatedPost.Title, updatedPost.Content, id).Scan(&updatedPost.Title, &updatedPost.Content, &updatedPost.Tags, &updatedPost.CreatedAt, &updatedPost.UpdatedAt)
+	err := r.db.QueryRowContext(ctx, query, updatedPost.Title, updatedPost.Content, updatedPost.Tags, id).Scan(&updatedPost.Title, &updatedPost.Content, &updatedPost.Tags, &updatedPost.CreatedAt, &updatedPost.UpdatedAt)
 
 	if err != nil {
 		return nil, err
