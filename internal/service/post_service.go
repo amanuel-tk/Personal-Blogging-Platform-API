@@ -32,3 +32,7 @@ func (s PostService) CreatePost(ctx context.Context, post model.Post) (*model.Po
 	}
 	return s.repo.CreatePost(ctx, post)
 }
+
+func (s PostService) GetPost(ctx context.Context) ([]model.Post, error) {
+	return s.repo.GetPost(ctx)
+}
