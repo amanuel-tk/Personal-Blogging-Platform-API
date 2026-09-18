@@ -19,7 +19,7 @@ func NewPostService(repo *repository.PostRepository) *PostService {
 	}
 }
 
-func (s PostService) CreatePost(ctx context.Context, post model.Post) (*model.Post, error) {
+func (s *PostService) CreatePost(ctx context.Context, post model.Post) (*model.Post, error) {
 
 	post.Title = strings.TrimSpace(post.Title)
 	post.Content = strings.TrimSpace(post.Content)
@@ -33,6 +33,6 @@ func (s PostService) CreatePost(ctx context.Context, post model.Post) (*model.Po
 	return s.repo.CreatePost(ctx, post)
 }
 
-func (s PostService) GetPost(ctx context.Context) ([]model.Post, error) {
+func (s *PostService) GetPost(ctx context.Context) ([]model.Post, error) {
 	return s.repo.GetPost(ctx)
 }
