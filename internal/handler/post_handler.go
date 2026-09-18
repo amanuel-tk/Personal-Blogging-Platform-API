@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strings"
 
 	"github.com/amanuel-tk/Personal-Blogging-Platform-API/internal/model"
 	"github.com/amanuel-tk/Personal-Blogging-Platform-API/internal/service"
@@ -69,12 +68,6 @@ func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 
 func (h *PostHandler) UpdatePost(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
-	id = strings.TrimSpace(id)
-	if id == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": "id is required"})
-		return
-	}
 
 	var req model.Post
 
@@ -96,4 +89,22 @@ func (h *PostHandler) UpdatePost(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]any{"message": "successfully updated", "post": updatePost})
+}
+
+func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+
+	err := h.service.DeletePost(r.Context(), id)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": err.Error(),
+		})
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+	json.NewEncoder(w).Encode(map[string]string{
+		"message": " post deleted successfully",
+	})
 }
