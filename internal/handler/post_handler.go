@@ -42,3 +42,16 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(createdPost)
 
 }
+
+func (h PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
+	getPosts, err := h.service.GetPost(r.Context())
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(getPosts)
+}
