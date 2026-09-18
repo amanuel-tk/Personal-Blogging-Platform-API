@@ -95,5 +95,5 @@ func (h *PostHandler) UpdatePost(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(updatePost)
+	json.NewEncoder(w).Encode(map[string]any{"message": "successfully updated", "post": updatePost})
 }
