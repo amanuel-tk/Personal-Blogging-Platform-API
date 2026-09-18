@@ -30,3 +30,41 @@ func (r *PostRepository) CreatePost(ctx context.Context, post model.Post) (*mode
 	return &post, nil
 
 }
+
+func (r *PostRepository) GetPost(ctx context.Context) ([]model.Post, error) {
+	query := `SELECT * FROM posts`
+
+	rows, err := r.db.QueryContext(ctx, query)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var posts []model.Post
+
+	for rows.Next() {
+		var post model.Post
+
+		if err := rows.Scan(
+			&post.ID,
+			&post.Title,
+			&post.Content,
+			&post.Tags,
+			&post.CreatedAt,
+			&post.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+
+		posts = append(posts, post)
+
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return posts, nil
+
+}
