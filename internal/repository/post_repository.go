@@ -6,6 +6,7 @@ import (
 	"errors"
 
 	"github.com/amanuel-tk/Personal-Blogging-Platform-API/internal/model"
+	"github.com/lib/pq"
 )
 
 type PostRepository struct {
@@ -24,9 +25,9 @@ func NewPostRepository(db *sql.DB) *PostRepository {
 
 func (r *PostRepository) CreatePost(ctx context.Context, post model.Post) (*model.Post, error) {
 
-	query := `INSERT INTO posts (title,content) VALUES ($1,$2) RETURNING id`
+	query := `INSERT INTO posts (title,content,tags) VALUES ($1,$2,$3) RETURNING id`
 
-	err := r.db.QueryRowContext(ctx, query, post.Title, post.Content).Scan(&post.ID)
+	err := r.db.QueryRowContext(ctx, query, post.Title, post.Content, post.Tags).Scan(&post.ID)
 
 	if err != nil {
 		return nil, err
@@ -37,7 +38,7 @@ func (r *PostRepository) CreatePost(ctx context.Context, post model.Post) (*mode
 }
 
 func (r *PostRepository) GetPost(ctx context.Context, filters Filters) ([]model.Post, error) {
-	baseQuery := `SELECT id,title,content,COALESCE(tags,''),created_at,updated_at FROM posts`
+	baseQuery := `SELECT id,title,content,tags,created_at,updated_at FROM posts`
 
 	var args []any
 
@@ -62,7 +63,7 @@ func (r *PostRepository) GetPost(ctx context.Context, filters Filters) ([]model.
 			&post.ID,
 			&post.Title,
 			&post.Content,
-			&post.Tags,
+			pq.Array(&post.Tags),
 			&post.CreatedAt,
 			&post.UpdatedAt,
 		); err != nil {
