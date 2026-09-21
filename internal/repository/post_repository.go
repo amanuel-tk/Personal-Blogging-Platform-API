@@ -12,6 +12,10 @@ type PostRepository struct {
 	db *sql.DB
 }
 
+type Filters struct {
+	Title string
+}
+
 func NewPostRepository(db *sql.DB) *PostRepository {
 	return &PostRepository{
 		db: db,
@@ -32,10 +36,17 @@ func (r *PostRepository) CreatePost(ctx context.Context, post model.Post) (*mode
 
 }
 
-func (r *PostRepository) GetPost(ctx context.Context) ([]model.Post, error) {
-	query := `SELECT id,title,content,COALESCE(tags,''),created_at,updated_at FROM posts`
+func (r *PostRepository) GetPost(ctx context.Context, filters Filters) ([]model.Post, error) {
+	baseQuery := `SELECT id,title,content,COALESCE(tags,''),created_at,updated_at FROM posts`
 
-	rows, err := r.db.QueryContext(ctx, query)
+	var args []any
+
+	if filters.Title != "" {
+		baseQuery += " WHERE title = $1"
+		args = append(args, filters.Title)
+	}
+
+	rows, err := r.db.QueryContext(ctx, baseQuery, args...)
 
 	if err != nil {
 		return nil, err
@@ -104,7 +115,7 @@ func (r *PostRepository) DeletePost(ctx context.Context, id string) error {
 
 func (r *PostRepository) GetSinglePost(ctx context.Context, id string) (*model.Post, error) {
 
-	query := `SELECT FROM post WHERE id=$1 RETURNING id,title,content,tags,created_at,updated_at`
+	query := `SELECT id,title,content,COALESCE(tags,''),created_at,updated_at FROM posts WHERE id=$1`
 
 	var data model.Post
 

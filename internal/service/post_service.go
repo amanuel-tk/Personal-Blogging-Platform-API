@@ -38,8 +38,8 @@ func (s *PostService) CreatePost(ctx context.Context, post model.Post) (*model.P
 	return s.repo.CreatePost(ctx, post)
 }
 
-func (s *PostService) GetPost(ctx context.Context) ([]model.Post, error) {
-	return s.repo.GetPost(ctx)
+func (s *PostService) GetPost(ctx context.Context, filters repository.Filters) ([]model.Post, error) {
+	return s.repo.GetPost(ctx, filters)
 }
 
 func (s *PostService) UpdatePost(ctx context.Context, id string, updatedPost model.Post) (*model.Post, error) {
