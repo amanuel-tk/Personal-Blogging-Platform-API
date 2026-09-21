@@ -101,3 +101,18 @@ func (r *PostRepository) DeletePost(ctx context.Context, id string) error {
 	return nil
 
 }
+
+func (r *PostRepository) GetSinglePost(ctx context.Context, id string) (*model.Post, error) {
+
+	query := `SELECT FROM post WHERE id=$1 RETURNING id,title,content,tags,created_at,updated_at`
+
+	var data model.Post
+
+	err := r.db.QueryRowContext(ctx, query, id).Scan(&data.ID, &data.Title, &data.Content, &data.Tags, &data.CreatedAt, &data.UpdatedAt)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &data, nil
+}
