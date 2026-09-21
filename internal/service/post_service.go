@@ -27,7 +27,9 @@ func (s *PostService) CreatePost(ctx context.Context, post model.Post) (*model.P
 
 	post.Title = strings.TrimSpace(post.Title)
 	post.Content = strings.TrimSpace(post.Content)
-	post.Tags = strings.TrimSpace(post.Tags)
+	for i, tag := range post.Tags {
+		post.Tags[i] = strings.TrimSpace(tag)
+	}
 
 	fmt.Println(post.Content)
 
@@ -48,7 +50,9 @@ func (s *PostService) UpdatePost(ctx context.Context, id string, updatedPost mod
 
 	updatedPost.Content = strings.TrimSpace(updatedPost.Content)
 	updatedPost.Title = strings.TrimSpace(updatedPost.Title)
-	updatedPost.Tags = strings.TrimSpace(updatedPost.Tags)
+	for i, tag := range updatedPost.Tags {
+		updatedPost.Tags[i] = strings.TrimSpace(tag)
+	}
 
 	if err := s.validator.Struct(updatedPost); err != nil {
 		return nil, err
@@ -58,7 +62,7 @@ func (s *PostService) UpdatePost(ctx context.Context, id string, updatedPost mod
 		return nil, errors.New("id is required")
 	}
 
-	if updatedPost.Title == "" || updatedPost.Content == "" || updatedPost.Tags == "" {
+	if updatedPost.Title == "" || updatedPost.Content == "" || len(updatedPost.Tags) == 0 {
 		return nil, errors.New("title, content and tags are required.")
 	}
 
