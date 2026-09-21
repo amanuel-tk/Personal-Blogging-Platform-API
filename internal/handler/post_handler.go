@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/amanuel-tk/Personal-Blogging-Platform-API/internal/model"
+	"github.com/amanuel-tk/Personal-Blogging-Platform-API/internal/repository"
 	"github.com/amanuel-tk/Personal-Blogging-Platform-API/internal/service"
 )
 
@@ -51,7 +52,10 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
-	getPosts, err := h.service.GetPost(r.Context())
+	filters := repository.Filters{
+		Title: r.URL.Query().Get("title"),
+	}
+	getPosts, err := h.service.GetPost(r.Context(), filters)
 
 	if err != nil {
 		log.Printf("failed to fetch posts: %v", err)
