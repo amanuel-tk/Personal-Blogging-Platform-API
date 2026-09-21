@@ -108,3 +108,20 @@ func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
 		"message": " post deleted successfully",
 	})
 }
+
+func (h *PostHandler) GetSinglePost(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+
+	result, err := h.service.GetSinglePost(r.Context(), id)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(result)
+
+}
