@@ -5,7 +5,7 @@ type Post struct {
 	Title     string   `json:"title" validate:"required,min=3,max=100"`
 	Category  string   `json:"category" validate:"required,min=3,max=100"`
 	Content   string   `json:"content" validate:"required,min=3,max=200"`
-	Tags      []string `json:"tags" validate:"required"`
+	Tags      []string `json:"tags" validate:"required,min=1,dive,required"`
 	CreatedAt string   `json:"createdAt"`
 	UpdatedAt string   `json:"updatedAt"`
 }
