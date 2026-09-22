@@ -40,20 +40,20 @@ func (r *PostRepository) CreatePost(ctx context.Context, post model.Post) (*mode
 }
 
 func (r *PostRepository) GetPost(ctx context.Context, filters Filters) ([]model.Post, error) {
-	baseQuery := `SELECT id,title,content,tags,created_at,updated_at FROM posts WHERE 1=1 `
+	baseQuery := `SELECT id,title,category,content,tags,created_at,updated_at FROM posts WHERE 1=1 `
 
 	var args []any
 
 	if filters.Title != "" {
 
 		args = append(args, filters.Title)
-		baseQuery += fmt.Sprintf("AND title = $%d", len(args))
+		baseQuery += fmt.Sprintf("AND title = $%d ", len(args))
 
 	}
 
 	if len(filters.Tags) != 0 {
 		args = append(args, pq.Array(filters.Tags))
-		baseQuery += fmt.Sprintf("AND tags @> $%d::text[]", len(args))
+		baseQuery += fmt.Sprintf("AND tags @> $%d::text[] ", len(args))
 	}
 
 	rows, err := r.db.QueryContext(ctx, baseQuery, args...)
@@ -63,7 +63,7 @@ func (r *PostRepository) GetPost(ctx context.Context, filters Filters) ([]model.
 	}
 	defer rows.Close()
 
-	var posts []model.Post
+	posts := make([]model.Post, 0)
 
 	for rows.Next() {
 		var post model.Post
@@ -71,6 +71,7 @@ func (r *PostRepository) GetPost(ctx context.Context, filters Filters) ([]model.
 		if err := rows.Scan(
 			&post.ID,
 			&post.Title,
+			&post.Category,
 			&post.Content,
 			pq.Array(&post.Tags),
 			&post.CreatedAt,
