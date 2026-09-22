@@ -62,14 +62,11 @@ func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("failed to fetch posts: %v", err)
 
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": "failed to fetch posts"})
+		writeError(w, http.StatusInternalServerError, "failed to fetch posts")
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(getPosts)
+	writeJson(w, http.StatusOK, getPosts)
 }
 
 func (h *PostHandler) UpdatePost(w http.ResponseWriter, r *http.Request) {
