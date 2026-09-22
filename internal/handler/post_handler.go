@@ -54,6 +54,7 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 	filters := repository.Filters{
 		Title: r.URL.Query().Get("title"),
+		Tags:  r.URL.Query()["tags"],
 	}
 	getPosts, err := h.service.GetPost(r.Context(), filters)
 

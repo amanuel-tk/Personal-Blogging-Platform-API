@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/amanuel-tk/Personal-Blogging-Platform-API/internal/model"
 	"github.com/lib/pq"
@@ -15,6 +16,7 @@ type PostRepository struct {
 
 type Filters struct {
 	Title string
+	Tags  []string
 }
 
 func NewPostRepository(db *sql.DB) *PostRepository {
@@ -38,13 +40,20 @@ func (r *PostRepository) CreatePost(ctx context.Context, post model.Post) (*mode
 }
 
 func (r *PostRepository) GetPost(ctx context.Context, filters Filters) ([]model.Post, error) {
-	baseQuery := `SELECT id,title,content,tags,created_at,updated_at FROM posts`
+	baseQuery := `SELECT id,title,content,tags,created_at,updated_at FROM posts WHERE 1=1 `
 
 	var args []any
 
 	if filters.Title != "" {
-		baseQuery += " WHERE title = $1"
+
 		args = append(args, filters.Title)
+		baseQuery += fmt.Sprintf("AND title = $%d", len(args))
+
+	}
+
+	if len(filters.Tags) != 0 {
+		args = append(args, pq.Array(filters.Tags))
+		baseQuery += fmt.Sprintf("AND tags @> $%d::text[]", len(args))
 	}
 
 	rows, err := r.db.QueryContext(ctx, baseQuery, args...)
