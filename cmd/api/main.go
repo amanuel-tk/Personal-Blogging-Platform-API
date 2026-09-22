@@ -33,7 +33,7 @@ func main() {
 
 	mux.HandleFunc("POST /post", postHandler.CreatePost)
 	mux.HandleFunc("GET /posts", postHandler.GetPosts)
-	mux.HandleFunc("PATCH /post/{id}", postHandler.UpdatePost)
+	mux.HandleFunc("PUT /post/{id}", postHandler.UpdatePost)
 	mux.HandleFunc("DELETE /post/{id}", postHandler.DeletePost)
 	mux.HandleFunc("GET /post/{id}", postHandler.GetSinglePost)
 
