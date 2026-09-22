@@ -3,13 +3,14 @@ package service
 import (
 	"context"
 	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/amanuel-tk/Personal-Blogging-Platform-API/internal/model"
 	"github.com/amanuel-tk/Personal-Blogging-Platform-API/internal/repository"
 	"github.com/go-playground/validator/v10"
 )
+
+var ErrPostNotFound = errors.New("post not found")
 
 type PostService struct {
 	repo      *repository.PostRepository
@@ -27,11 +28,10 @@ func (s *PostService) CreatePost(ctx context.Context, post model.Post) (*model.P
 
 	post.Title = strings.TrimSpace(post.Title)
 	post.Content = strings.TrimSpace(post.Content)
+	post.Category = strings.TrimSpace(post.Category)
 	for i, tag := range post.Tags {
 		post.Tags[i] = strings.TrimSpace(tag)
 	}
-
-	fmt.Println(post.Content)
 
 	if err := s.validator.Struct(post); err != nil {
 		return nil, err
