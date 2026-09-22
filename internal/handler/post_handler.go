@@ -2,13 +2,14 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 	"log"
 	"net/http"
 
 	"github.com/amanuel-tk/Personal-Blogging-Platform-API/internal/model"
 	"github.com/amanuel-tk/Personal-Blogging-Platform-API/internal/repository"
 	"github.com/amanuel-tk/Personal-Blogging-Platform-API/internal/service"
+	"github.com/go-playground/validator/v10"
 )
 
 type PostHandler struct {
@@ -27,27 +28,27 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&post)
 	if err != nil {
 
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": "invalid request body"})
-
+		writeError(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
-
-	fmt.Println(post)
 
 	createdPost, err := h.service.CreatePost(r.Context(), post)
 
 	if err != nil {
+
+		var validationError validator.ValidationErrors
+
+		if errors.As(err, &validationError) {
+			writeError(w, http.StatusBadRequest, "invalid post data")
+			return
+		}
 		log.Printf("failed to create post :%v", err)
 
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": "failed to create post"})
+		writeError(w, http.StatusInternalServerError, "failed to create post")
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(createdPost)
+	writeJson(w, http.StatusCreated, createdPost)
 
 }
 
