@@ -11,7 +11,6 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-var ErrPostNotFound = errors.New("post not found")
 var ErrIdIsRequired = errors.New("id is required")
 var ErrContentMissing = errors.New("title, content,category and tags are required.")
 
