@@ -127,10 +127,8 @@ func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	data := map[string]string{
-		"message": " post deleted successfully",
-	}
-	writeJson(w, http.StatusOK, data)
+
+	writeJson(w, http.StatusNoContent, nil)
 }
 
 func (h *PostHandler) GetSinglePost(w http.ResponseWriter, r *http.Request) {
@@ -138,14 +136,18 @@ func (h *PostHandler) GetSinglePost(w http.ResponseWriter, r *http.Request) {
 
 	result, err := h.service.GetSinglePost(r.Context(), id)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{
-			"error": err.Error(),
-		})
+
+		switch {
+		case errors.Is(err, service.ErrIdIsRequired):
+			writeError(w, http.StatusBadRequest, service.ErrIdIsRequired.Error())
+		case errors.Is(err, sql.ErrNoRows):
+			writeError(w, http.StatusNotFound, "post not found")
+		default:
+			writeError(w, http.StatusInternalServerError, "failed to delete post")
+		}
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(result)
+	writeJson(w, http.StatusOK, result)
 
 }
