@@ -105,9 +105,8 @@ func (h *PostHandler) UpdatePost(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-	data := map[string]any{"message": "successfully updated", "post": updatePost}
 
-	writeJson(w, http.StatusOK, data)
+	writeJson(w, http.StatusOK, updatePost)
 }
 
 func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
@@ -143,7 +142,7 @@ func (h *PostHandler) GetSinglePost(w http.ResponseWriter, r *http.Request) {
 		case errors.Is(err, sql.ErrNoRows):
 			writeError(w, http.StatusNotFound, "post not found")
 		default:
-			writeError(w, http.StatusInternalServerError, "failed to delete post")
+			writeError(w, http.StatusInternalServerError, "failed to get post")
 		}
 		return
 	}
