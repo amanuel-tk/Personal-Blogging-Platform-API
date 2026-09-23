@@ -116,16 +116,21 @@ func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
 	err := h.service.DeletePost(r.Context(), id)
 
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{
-			"error": err.Error(),
-		})
+
+		switch {
+		case errors.Is(err, service.ErrIdIsRequired):
+			writeError(w, http.StatusBadRequest, service.ErrIdIsRequired.Error())
+		case errors.Is(err, repository.ErrPostNotFound):
+			writeError(w, http.StatusNotFound, repository.ErrPostNotFound.Error())
+		default:
+			writeError(w, http.StatusInternalServerError, "failed to delete post")
+		}
 		return
 	}
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{
+	data := map[string]string{
 		"message": " post deleted successfully",
-	})
+	}
+	writeJson(w, http.StatusOK, data)
 }
 
 func (h *PostHandler) GetSinglePost(w http.ResponseWriter, r *http.Request) {

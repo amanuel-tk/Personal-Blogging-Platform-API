@@ -25,6 +25,8 @@ func NewPostRepository(db *sql.DB) *PostRepository {
 	}
 }
 
+var ErrPostNotFound = errors.New("post not found")
+
 func (r *PostRepository) CreatePost(ctx context.Context, post model.Post) (*model.Post, error) {
 
 	query := `INSERT INTO posts (title,category,content,tags) VALUES ($1,$2,$3,$4) RETURNING id,title,category,content,tags,created_at,updated_at`
@@ -120,7 +122,7 @@ func (r *PostRepository) DeletePost(ctx context.Context, id string) error {
 		return err
 	}
 	if rowAffected == 0 {
-		return errors.New("post not found")
+		return ErrPostNotFound
 	}
 	return nil
 
