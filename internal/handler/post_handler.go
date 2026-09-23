@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"log"
@@ -75,23 +76,38 @@ func (h *PostHandler) UpdatePost(w http.ResponseWriter, r *http.Request) {
 	var req model.Post
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": "id is required"})
+
+		writeError(w, http.StatusBadRequest, "bad request body")
 		return
 	}
 
 	updatePost, err := h.service.UpdatePost(r.Context(), id, req)
 
 	if err != nil {
-		log.Printf("failed to update post:%v", err)
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": "failed to update post"})
+		var validationErrors validator.ValidationErrors
+		log.Printf("error %v", err)
+		switch {
+		case errors.Is(err, service.ErrIdIsRequired):
+			writeError(w, http.StatusBadRequest, service.ErrIdIsRequired.Error())
+
+		case errors.Is(err, service.ErrContentMissing):
+			writeError(w, http.StatusBadRequest, service.ErrContentMissing.Error())
+
+		case errors.As(err, &validationErrors):
+			writeError(w, http.StatusBadRequest, "invalid post data")
+
+		case errors.Is(err, sql.ErrNoRows):
+			writeError(w, http.StatusNotFound, "post not found")
+
+		default:
+			writeError(w, http.StatusInternalServerError, "failed to update post")
+		}
+
 		return
 	}
+	data := map[string]any{"message": "successfully updated", "post": updatePost}
 
-	w.Header().Set("content-type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]any{"message": "successfully updated", "post": updatePost})
+	writeJson(w, http.StatusOK, data)
 }
 
 func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {

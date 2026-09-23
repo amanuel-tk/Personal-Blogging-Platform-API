@@ -12,6 +12,8 @@ import (
 )
 
 var ErrPostNotFound = errors.New("post not found")
+var ErrIdIsRequired = errors.New("id is required")
+var ErrContentMissing = errors.New("title, content,category and tags are required.")
 
 type PostService struct {
 	repo      *repository.PostRepository
@@ -50,6 +52,7 @@ func (s *PostService) UpdatePost(ctx context.Context, id string, updatedPost mod
 	id = strings.TrimSpace(id)
 
 	updatedPost.Content = strings.TrimSpace(updatedPost.Content)
+	updatedPost.Category = strings.TrimSpace(updatedPost.Category)
 	updatedPost.Title = strings.TrimSpace(updatedPost.Title)
 	for i, tag := range updatedPost.Tags {
 		updatedPost.Tags[i] = strings.TrimSpace(tag)
@@ -60,11 +63,11 @@ func (s *PostService) UpdatePost(ctx context.Context, id string, updatedPost mod
 	}
 
 	if id == "" {
-		return nil, errors.New("id is required")
+		return nil, ErrIdIsRequired
 	}
 
-	if updatedPost.Title == "" || updatedPost.Content == "" || len(updatedPost.Tags) == 0 {
-		return nil, errors.New("title, content and tags are required.")
+	if updatedPost.Title == "" || updatedPost.Content == "" || len(updatedPost.Tags) == 0 || updatedPost.Category == "" {
+		return nil, ErrContentMissing
 	}
 
 	return s.repo.UpdatePost(ctx, id, updatedPost)
