@@ -87,7 +87,7 @@ func (s *PostService) DeletePost(ctx context.Context, id string) error {
 func (s *PostService) GetSinglePost(ctx context.Context, id string) (*model.Post, error) {
 	id = strings.TrimSpace(id)
 	if id == "" {
-		return nil, errors.New("post id is required")
+		return nil, ErrIdIsRequired
 	}
 	return s.repo.GetSinglePost(ctx, id)
 }
